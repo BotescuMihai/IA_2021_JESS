@@ -1,0 +1,73 @@
+(defrule startup
+  =>
+  (printout t "The problem is" crlf)
+  (printout t "    HOCUS" crlf)
+  (printout t " +  POCUS" crlf)
+  (printout t "   ------" crlf)
+  (printout t " = PRESTO" crlf)
+  (assert (number 0)
+          (number 1)
+          (number 2)
+          (number 3)
+          (number 4)
+          (number 5)
+          (number 6)
+          (number 7)
+          (number 8)
+          (number 9)
+          (letter H)
+          (letter O)
+          (letter C)
+          (letter U)
+          (letter S)
+          (letter P)
+          (letter R)
+          (letter E)
+          (letter T)
+          (letter O)
+          ))
+
+(deftemplate combination (slot letter (type SYMBOL)) (slot number (type INTEGER)))
+(defrule generate-combinations
+  (number ?x)
+  (letter ?a)
+  =>
+  (assert (combination (letter ?a) (number ?x))))
+
+
+;; HOCUS + 
+;; POCUS 
+;;PRESTO
+(defrule find-solution
+    (combination (letter P) (number ?p & :(= ?p 1)))
+    (combination (letter H) (number ?h &~?p & :(= ?h 9)))
+    (combination (letter R) (number ?r &~?h&~?p & :(= ?r 0)))
+    (combination (letter E) (number ?e &~?r&~?h&~?p))
+    (combination (letter S) (number ?s &~?e&~?r&~?h&~?p))
+    (combination (letter O) (number ?o &~?s&~?e&~?r&~?h&~?p & :(= (mod (* 2 ?s) 10) ?o)))
+    (combination (letter U) (number ?u &~?o&~?s&~?e&~?r&~?h&~?p))
+    (combination (letter T) (number ?t &~?u&~?o&~?s&~?e&~?r&~?h&~?p & :(= (+ (mod (* 2 ?u) 10) (div (* 2 ?s) 10)) ?t))) 
+  	(combination (letter C) (number ?c &~?t&~?o&~?s&~?e&~?r&~?h&~?p & :(= (+ (mod (* 2 ?c) 10) (div (* 2 ?u) 10)) ?s)))
+	(test (eq ?r (+ (mod (+ ?h ?p) 10) (div (* 2 ?o) 10))))
+	(test (eq ?p (div (+ ?h ?p) 10)))
+	(test (eq ?e (+ (mod (* 2 ?o) 10) (div (* 2 ?c) 10))))
+  =>
+  (printout t "A solution is:" crlf)
+  (printout t "  P = " ?p )
+  (printout t "  R = " ?r )
+  (printout t "  H = " ?h )
+  (printout t "  E = " ?e )
+  (printout t "  C = " ?c )
+  (printout t "  S = " ?s )
+  (printout t "  U = " ?u )
+  (printout t "  T = " ?t )
+  (printout t "  O = " ?o )
+
+  (printout t crlf)
+  (printout t "    " ?h ?o ?c ?u ?s crlf)
+  (printout t " +  " ?p ?o ?c ?u ?s crlf) 
+  (printout t "   " "------" crlf)
+  (printout t " = " ?p ?r ?e ?s ?t ?o crlf)
+ )
+(reset)
+(run)
